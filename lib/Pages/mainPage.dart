@@ -1,7 +1,6 @@
-import 'dart:html';
-
 import 'package:atelier_ladida/Data/Deserialize.dart';
 import 'package:atelier_ladida/Data/item.dart';
+import 'package:atelier_ladida/Data/linkButtons.dart';
 import 'package:atelier_ladida/Data/seriesName.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
@@ -21,6 +20,7 @@ class _MainPageState extends State<MainPage> {
   List<Item> items = <Item>[];
   late Item source;
   late Item destination;
+  late Item detail;
   //從Google API獲取資料
   Future<List<Item>> getItems() async {
     return await client.getItems(series.name);
@@ -65,6 +65,30 @@ class _MainPageState extends State<MainPage> {
                   buildResult(search());
                 },
                 child: const Text("Find Route")),
+            buildDetailDropDown(nameList),
+            ElevatedButton(onPressed: (){
+              String result = "ID:${detail.no}\r\n";
+              result+="Name:${detail.name}\r\n";
+              result+="Attributes:\r\n";
+              if(detail.attribute.isNotEmpty){
+                for(String str in detail.attribute){
+                result+="$str\r\n";
+              }
+              }
+              result+="Types:\r\n";
+              if(detail.type.isNotEmpty){
+                for(String str in detail.type){
+                result+="$str\r\n";
+              }
+              }
+              result+="Sources:\r\n";
+              if(detail.source.isNotEmpty){
+                for(String str in detail.source){
+                result+="$str\r\n";
+              }
+              }
+              buildResult(result);
+            }, child: const Text("Get Detail"))
           ], padding: const EdgeInsets.all(30));
         },
       );
@@ -85,13 +109,25 @@ class _MainPageState extends State<MainPage> {
           label: "Destination",
           onChanged: setDestination,
           selectedItem: nameList[0]);
+          //建立Detail ComboBox
+  Widget buildDetailDropDown(List<String> nameList) => DropdownSearch<String>(
+      mode: Mode.MENU,
+      showSelectedItem: true,
+      items: nameList,
+      label: "Detail",
+      onChanged: setDetail,
+      selectedItem: nameList[0]);
   //設定source
   void setSource(String? name) =>
       source = items.firstWhere((item) => item.name == name);
   //設定destination
   void setDestination(String? name) =>
       destination = items.firstWhere((item) => item.name == name);
+      //設定detail
+  void setDetail(String? name) =>
+      detail = items.firstWhere((item) => item.name == name);
   _MainPageState(this.series);
+  //找路徑回傳顯示字串
   String search() {
     String returnValue = "";
 
@@ -172,6 +208,8 @@ class _MainPageState extends State<MainPage> {
         ),
         body: Center(
           child: buildItems(),
-        ));
+        ),
+        drawer: Drawer(child:ListView(children: LinkButtons.buildElevatedButtons(context),)),
+        );
   }
 }
