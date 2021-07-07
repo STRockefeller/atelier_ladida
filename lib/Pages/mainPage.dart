@@ -57,6 +57,7 @@ class _MainPageState extends State<MainPage> {
           }
           source = items[0];
           destination = items[0];
+          detail = items[0];
           return ListView(children: [
             buildSourceDropDown(nameList),
             buildDestinationDropDown(nameList),
