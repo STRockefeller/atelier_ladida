@@ -1,7 +1,9 @@
 import 'package:atelier_ladida/Data/Deserialize.dart';
+import 'package:atelier_ladida/Data/appBarWidget.dart';
 import 'package:atelier_ladida/Data/item.dart';
 import 'package:atelier_ladida/Data/linkButtons.dart';
 import 'package:atelier_ladida/Data/seriesName.dart';
+import 'package:atelier_ladida/Data/settings.dart';
 import 'package:flutter/material.dart';
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:ars_dialog/ars_dialog.dart';
@@ -53,7 +55,9 @@ class _MainPageState extends State<MainPage> {
           items = snapshot.data;
           List<String> nameList = <String>[];
           for (Item item in items) {
-            nameList.add(item.name);
+            GlobalSettings.settings.languageSetting == enumLanguage.chinese
+                ? nameList.add(item.name)
+                : nameList.add(item.japanese);
           }
           source = items[0];
           destination = items[0];
@@ -67,29 +71,31 @@ class _MainPageState extends State<MainPage> {
                 },
                 child: const Text("Find Route")),
             buildDetailDropDown(nameList),
-            ElevatedButton(onPressed: (){
-              String result = "ID:${detail.no}\r\n";
-              result+="Name:${detail.name}\r\n";
-              result+="Attributes:\r\n";
-              if(detail.attribute.isNotEmpty){
-                for(String str in detail.attribute){
-                result+="$str\r\n";
-              }
-              }
-              result+="Types:\r\n";
-              if(detail.type.isNotEmpty){
-                for(String str in detail.type){
-                result+="$str\r\n";
-              }
-              }
-              result+="Sources:\r\n";
-              if(detail.source.isNotEmpty){
-                for(String str in detail.source){
-                result+="$str\r\n";
-              }
-              }
-              buildResult(result);
-            }, child: const Text("Get Detail"))
+            ElevatedButton(
+                onPressed: () {
+                  String result = "ID:${detail.no}\r\n";
+                  result += "Name:${detail.name}\r\n";
+                  result += "Attributes:\r\n";
+                  if (detail.attribute.isNotEmpty) {
+                    for (String str in detail.attribute) {
+                      result += "$str\r\n";
+                    }
+                  }
+                  result += "Types:\r\n";
+                  if (detail.type.isNotEmpty) {
+                    for (String str in detail.type) {
+                      result += "$str\r\n";
+                    }
+                  }
+                  result += "Sources:\r\n";
+                  if (detail.source.isNotEmpty) {
+                    for (String str in detail.source) {
+                      result += "$str\r\n";
+                    }
+                  }
+                  buildResult(result);
+                },
+                child: const Text("Get Detail"))
           ], padding: const EdgeInsets.all(30));
         },
       );
@@ -110,7 +116,7 @@ class _MainPageState extends State<MainPage> {
           label: "Destination",
           onChanged: setDestination,
           selectedItem: nameList[0]);
-          //建立Detail ComboBox
+  //建立Detail ComboBox
   Widget buildDetailDropDown(List<String> nameList) => DropdownSearch<String>(
       mode: Mode.MENU,
       showSelectedItem: true,
@@ -120,13 +126,19 @@ class _MainPageState extends State<MainPage> {
       selectedItem: nameList[0]);
   //設定source
   void setSource(String? name) =>
-      source = items.firstWhere((item) => item.name == name);
+      source = GlobalSettings.settings.languageSetting == enumLanguage.chinese
+          ? items.firstWhere((item) => item.name == name)
+          : items.firstWhere((item) => item.japanese == name);
   //設定destination
-  void setDestination(String? name) =>
-      destination = items.firstWhere((item) => item.name == name);
-      //設定detail
+  void setDestination(String? name) => destination =
+      GlobalSettings.settings.languageSetting == enumLanguage.chinese
+          ? items.firstWhere((item) => item.name == name)
+          : items.firstWhere((item) => item.japanese == name);
+  //設定detail
   void setDetail(String? name) =>
-      detail = items.firstWhere((item) => item.name == name);
+      detail = GlobalSettings.settings.languageSetting == enumLanguage.chinese
+          ? items.firstWhere((item) => item.name == name)
+          : items.firstWhere((item) => item.japanese == name);
   _MainPageState(this.series);
   //找路徑回傳顯示字串
   String search() {
@@ -137,7 +149,10 @@ class _MainPageState extends State<MainPage> {
     bool firstLevelMatchType =
         destination.source.any((s) => source.type.contains(s));
     if (firstLevelMatchName || firstLevelMatchType) {
-      returnValue += "First Level:\r\n${source.name}-->${destination.name}";
+      returnValue +=
+          GlobalSettings.settings.languageSetting == enumLanguage.chinese
+              ? "First Level:\r\n${source.name}-->${destination.name}"
+              : "First Level:\r\n${source.japanese}-->${destination.japanese}";
     }
 
     // 2nd Level
@@ -161,8 +176,10 @@ class _MainPageState extends State<MainPage> {
       bool secondLevelMatchType =
           itemData.source.any((s) => source.type.contains(s));
       if (secondLevelMatchName || secondLevelMatchType) {
-        returnValue +=
-            "\r\nSecond Level:\r\n${source.name}-->${itemData.name}-->${destination.name}";
+        returnValue += GlobalSettings.settings.languageSetting ==
+                enumLanguage.chinese
+            ? "\r\nSecond Level:\r\n${source.name}-->${itemData.name}-->${destination.name}"
+            : "\r\nSecond Level:\r\n${source.japanese}-->${itemData.japanese}-->${destination.japanese}";
       }
     }
 
@@ -192,8 +209,10 @@ class _MainPageState extends State<MainPage> {
         bool thirdLevelMatchType =
             itemData.source.any((s) => source.type.contains(s));
         if (thirdLevelMatchName || thirdLevelMatchType) {
-          returnValue +=
-              "\r\nThird Level:\r\n${source.name}-->${itemData.name}-->${secondItem.name}-->${destination.name}";
+          returnValue += GlobalSettings.settings.languageSetting ==
+                  enumLanguage.chinese
+              ? "\r\nThird Level:\r\n${source.name}-->${itemData.name}-->${secondItem.name}-->${destination.name}"
+              : "\r\nThird Level:\r\n${source.japanese}-->${itemData.japanese}-->${secondItem.japanese}-->${destination.japanese}";
         }
       }
     }
@@ -204,13 +223,14 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(series.buttonName),
-        ),
-        body: Center(
-          child: buildItems(),
-        ),
-        drawer: Drawer(child:ListView(children: LinkButtons.buildElevatedButtons(context),)),
-        );
+      appBar: AppBarWidget.buildAppBar(context, series.buttonName),
+      body: Center(
+        child: buildItems(),
+      ),
+      drawer: Drawer(
+          child: ListView(
+        children: LinkButtons.buildElevatedButtons(context),
+      )),
+    );
   }
 }

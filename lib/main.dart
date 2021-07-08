@@ -1,19 +1,21 @@
+import 'package:atelier_ladida/Data/settings.dart';
 import 'package:flutter/material.dart';
 import 'Pages/homePage.dart';
-import 'Pages/mainPage.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key){
+    Setting.readSetting();
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData(
-        primarySwatch: Colors.orange,
+        primarySwatch: GlobalSettings.settings.themeColorSetting.color,
       ),
       home: HomePage(),
       debugShowCheckedModeBanner: false,

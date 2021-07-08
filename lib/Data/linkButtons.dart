@@ -1,5 +1,6 @@
 
 import 'package:atelier_ladida/Data/seriesName.dart';
+import 'package:atelier_ladida/Pages/SettingPage.dart';
 import 'package:atelier_ladida/Pages/mainPage.dart';
 import 'package:flutter/material.dart';
 
