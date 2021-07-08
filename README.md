@@ -31,10 +31,10 @@
 
 ![](https://i.imgur.com/NHps4K9.png)
 
-![](https://i.imgur.com/WxQvJpZ.png)
+![](https://i.imgur.com/24YpiFB.png)
 
 ## Changelog
 
 
 
-* 2021/07/07 測試中
+* 2021/0708 [v1.0.0] 基礎功能已完善
